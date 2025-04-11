@@ -15,8 +15,25 @@ jobs:
       - name: Build Docker Image
         run: docker build -t hello-devops:latest .
 
-      - name: Run Container and Execute Tests
-        run: docker run --rm hello-devops:latest ./run-tests.sh
+      - name: Run NGINX Container in Background
+        run: docker run -d -p 8081:80 --name test-nginx hello-devops:latest
+
+      - name: Wait for NGINX to start
+        run: sleep 5
+
+      - name: Run Tests from outside container
+        run: |
+          echo "✅ Début des tests..."
+          if curl -s http://localhost:8081 | grep -q "Hello"; then
+            echo "✅ Test de page d'accueil : OK"
+          else
+            echo "❌ Test de page d'accueil : ÉCHEC"
+            exit 1
+          fi
+          echo "✅ Tous les tests sont passés avec succès !"
+
+      - name: Stop and Remove Container
+        run: docker stop test-nginx
 
   deploy:
     runs-on: ubuntu-latest
