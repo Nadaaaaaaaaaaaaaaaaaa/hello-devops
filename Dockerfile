@@ -1,20 +1,21 @@
-# Copier le script dans le conteneur
-COPY run-tests.sh /run-tests.sh
-
-# Donner la permission d'exécution
-RUN chmod +x /run-tests.sh
-
-# Définir le dossier de travail
-WORKDIR /
-
-# Commande d'entrée par défaut (si besoin)
-CMD ["/bin/bash"]
-
-# Use the official Nginx image as the base image
+# Étape 1 : Utiliser une image de base (Alpine ici)
 FROM nginx:alpine
 
-# Copy the custom web page into the Nginx default directory
+# Étape 2 : Définir le dossier de travail
+WORKDIR /
+
+# Étape 3 : Copier le script dans le conteneur
+COPY run-tests.sh /run-tests.sh
+
+# Étape 4 : Donner la permission d'exécution
+RUN chmod +x /run-tests.sh
+
+# Étape 5 : Copier la page HTML dans le dossier nginx
 COPY index.html /usr/share/nginx/html/index.html
 
-# Expose port 80 for the web server
+# Étape 6 : Exposer le port 80
 EXPOSE 80
+
+# Étape 7 : Lancer le script de test (optionnel si besoin)
+# Sinon, tu laisses nginx démarrer automatiquement :
+# CMD ["/run-tests.sh"]
