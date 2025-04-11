@@ -2,8 +2,11 @@
 
 echo "✅ Début des tests..."
 
-# Vérifier que le serveur Nginx fonctionne
-if curl -s http://localhost | grep -q "Hello"; then
+# Attendre un peu que le service soit up (optionnel)
+sleep 2
+
+# Tester si la page d'accueil renvoie bien "Hello" (ou un autre mot clé)
+if curl -s http://localhost:8081 | grep -q "Hello"; then
   echo "✅ Test de page d'accueil : OK"
 else
   echo "❌ Test de page d'accueil : ÉCHEC"
