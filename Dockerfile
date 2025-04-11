@@ -1,21 +1,24 @@
-# Étape 1 : Utiliser une image de base (Alpine ici)
-FROM nginx:alpine
+# Étape 1 : Utiliser une image Alpine pour copier le script et exécuter les tests
+FROM alpine:latest as builder
 
-# Étape 2 : Définir le dossier de travail
-WORKDIR /
+# Installer curl (utilisé dans le script de test)
+RUN apk add --no-cache curl
 
-# Étape 3 : Copier le script dans le conteneur
+# Copier le script de test
 COPY run-tests.sh /run-tests.sh
-
-# Étape 4 : Donner la permission d'exécution
 RUN chmod +x /run-tests.sh
 
-# Étape 5 : Copier la page HTML dans le dossier nginx
+# Étape 2 : Image finale Nginx
+FROM nginx:alpine
+
+# Copier l'index.html dans l'image finale
 COPY index.html /usr/share/nginx/html/index.html
 
-# Étape 6 : Exposer le port 80
+# Copier le script depuis le builder
+COPY --from=builder /run-tests.sh /run-tests.sh
+
+# Exposer le port web
 EXPOSE 80
 
-# Étape 7 : Lancer le script de test (optionnel si besoin)
-# Sinon, tu laisses nginx démarrer automatiquement :
-# CMD ["/run-tests.sh"]
+# Lancer Nginx en arrière-plan et exécuter les tests
+CMD ["sh", "-c", "nginx -g 'daemon off;' & ./run-tests.sh"]
