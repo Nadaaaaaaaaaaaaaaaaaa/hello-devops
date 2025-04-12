@@ -52,7 +52,11 @@ jobs:
       - name: Push Docker Image
         run: docker push nadajoobeur/hello-devops:latest
 
+      - name: Set up Kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+
       - name: Deploy to Kubernetes
         run: |
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > kubeconfig
-          kubectl --kubeconfig=kubeconfig apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml
+

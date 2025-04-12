@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deployment
+spec:
+  replicas: 1  # Nombre de réplicas (instances) de ton application
+  selector:
+    matchLabels:
+      app: hello-app
+  template:
+    metadata:
+      labels:
+        app: hello-app
+    spec:
+      containers:
+      - name: hello-container
+        image: nadajoobeur/hello-devops:v1.0  # Ton image Docker
+        ports:
+        - containerPort: 80  # Port sur lequel ton app sera accessible dans le container
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-service
+spec:
+  selector:
+    app: hello-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80  # Port interne du container
+  type: NodePort  # Permet d'exposer ton service à l'extérieur du cluster
